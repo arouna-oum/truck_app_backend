@@ -30,6 +30,7 @@ SECRET_KEY = 'django-insecure-*@)u7!8l)l(a2lru_94n$n9%-i__$wzb-2d6_dz#!-b^+4vg+9
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    "truck-app-frontend.vercel.app/",
     "localhost",
     "127.0.0.1"
 ]
@@ -164,7 +165,7 @@ MEDIA_ROOT = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5174",
+    "https://truck-app-frontend.vercel.app/",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
