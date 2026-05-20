@@ -165,7 +165,7 @@ MEDIA_ROOT = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CORS_ALLOWED_ORIGINS = [
-    "https://truck-app-frontend.vercel.app/",
+    "https://truck-app-frontend.vercel.app",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
