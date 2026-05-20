@@ -113,8 +113,8 @@ class TripView(viewsets.ModelViewSet):
     @transaction.atomic
     def create(self, request):
         print('Entered for creation')
-        user_id = request.data.get('assigned_driver')
-        user_b = request.data.get('co_driver')
+        user_id = request.data.get('assigned_driver_id')
+        user_b = request.data.get('co_driver_id')
         userModel = get_user_model()
         try:
             user = userModel.objects.get(id=user_id)
@@ -126,7 +126,7 @@ class TripView(viewsets.ModelViewSet):
             return Response({'message': 'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
         
         serializer = TripSerializer(data=request.data)
-
+        print(f"All the values for trip are correct {serializer}")
         if serializer.is_valid():
             print(f"All the values for trip are correct {serializer}")
             address_point_a = serializer.validated_data['origin']
@@ -281,3 +281,22 @@ class LoadAllTrips(APIView):
         trips_serializer = TripSerializer(user_trips, many=True).data
 
         return Response(trips_serializer, status=status.HTTP_200_OK)
+
+def getTrip_details(request, pk):
+    if request.method == 'GET':
+        userModel = get_user_model()
+        user = get_object_or_404(userModel,id=pk)
+        print('The user exists', user)
+        total_trips = Trip.objects.filter(assigned_driver=pk).count()
+        all_pending_trips = Trip.objects.filter(status='pending',assigned_driver=pk)
+        all_in_transit_leases = Trip.objects.filter(status='in_transit',assigned_driver=pk)
+        all_completed_leases = Trip.objects.filter(status='completed',assigned_driver=pk)
+        all_cancelled_leases = Trip.objects.filter(status='cancelled',assigned_driver=pk)
+        if all_pending_trips.exists() or all_in_transit_leases.exists() or all_completed_leases.count() or all_cancelled_leases.count():
+            print(f'the total active leases are shown as {all_pending_trips.count()}')
+            return JsonResponse({'total':total_trips,'pending': all_pending_trips.count(),'in_transit': all_in_transit_leases.count(), 'cancelled': all_cancelled_leases.count(), 'completed': all_completed_leases.count()}, status=status.HTTP_200_OK)
+        print('the all active leases is empty or None')
+        return JsonResponse({'total':total_trips,'pending': 0, 'in_transit':0, 'cancelled': 0, 'completed': 0}, status=status.HTTP_200_OK)
+    else:
+        return JsonResponse({'message': 'Only GET method allowed'}, status=405)
+    
