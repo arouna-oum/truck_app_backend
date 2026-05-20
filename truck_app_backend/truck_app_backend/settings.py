@@ -28,13 +28,13 @@ SECRET_KEY = 'django-insecure-*@)u7!8l)l(a2lru_94n$n9%-i__$wzb-2d6_dz#!-b^+4vg+9
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = [
-    "truck-app-frontend.vercel.app/",
-    "truck-app-backend-5qjb.onrender.com/",
-    "localhost",
-    "127.0.0.1"
-]
+ALLOWED_HOSTS = ["*"]
+# ALLOWED_HOSTS = [
+#     "truck-app-frontend.vercel.app/",
+#     "truck-app-backend-5qjb.onrender.com/",
+#     "localhost",
+#     "127.0.0.1"
+# ]
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
