@@ -3,6 +3,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import *
 from .models import *
 from user.models import User
+from django.db.models import Sum
 from user.serializers import UserSerializer
 from rest_framework.views import APIView
 from rest_framework.decorators import permission_classes
@@ -288,15 +289,17 @@ def getTrip_details(request, pk):
         user = get_object_or_404(userModel,id=pk)
         print('The user exists', user)
         total_trips = Trip.objects.filter(assigned_driver=pk).count()
+        total_distance = Trip.objects.aggregate(distance = Sum('distance'))['distance']
+        print('The total distance exists', total_distance)
         all_pending_trips = Trip.objects.filter(status='pending',assigned_driver=pk)
         all_in_transit_leases = Trip.objects.filter(status='in_transit',assigned_driver=pk)
         all_completed_leases = Trip.objects.filter(status='completed',assigned_driver=pk)
         all_cancelled_leases = Trip.objects.filter(status='cancelled',assigned_driver=pk)
         if all_pending_trips.exists() or all_in_transit_leases.exists() or all_completed_leases.count() or all_cancelled_leases.count():
             print(f'the total active leases are shown as {all_pending_trips.count()}')
-            return JsonResponse({'total':total_trips,'pending': all_pending_trips.count(),'in_transit': all_in_transit_leases.count(), 'cancelled': all_cancelled_leases.count(), 'completed': all_completed_leases.count()}, status=status.HTTP_200_OK)
+            return JsonResponse({'distance': total_distance,'total':total_trips,'pending': all_pending_trips.count(),'in_transit': all_in_transit_leases.count(), 'cancelled': all_cancelled_leases.count(), 'completed': all_completed_leases.count()}, status=status.HTTP_200_OK)
         print('the all active leases is empty or None')
-        return JsonResponse({'total':total_trips,'pending': 0, 'in_transit':0, 'cancelled': 0, 'completed': 0}, status=status.HTTP_200_OK)
+        return JsonResponse({'distance': 0,'total':total_trips,'pending': 0, 'in_transit':0, 'cancelled': 0, 'completed': 0}, status=status.HTTP_200_OK)
     else:
         return JsonResponse({'message': 'Only GET method allowed'}, status=405)
     
